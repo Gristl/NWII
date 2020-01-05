@@ -1,4 +1,4 @@
-package erasure
+package main
 
 import (
 	"bytes"

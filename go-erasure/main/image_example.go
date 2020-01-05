@@ -1,14 +1,15 @@
-package erasure
+package main
 
 import (
 	"bufio"
 	"fmt"
-	"net/http"
 	"os"
 )
 
 func main() {
-	
+
+	fmt.Println("hello, you hillbilly!")
+	fmt.Println(jpgIntoByte("WhatsAppImage2020-01-05at17.49.59.jpeg"))
 }
 
 // https://socketloop.com/tutorials/golang-convert-an-image-file-to-byte
@@ -24,16 +25,21 @@ func jpgIntoByte(imageName string) (imageBuf []byte) {
 
 	fileInfo, _ := file.Stat()
 	var size int64 = fileInfo.Size()
-	bytes := make([]byte, size)
+	imageBuf = make([]byte, size)
 
 	// read file into bytes
 	var buffer = bufio.NewReader(file)
-	_, err = buffer.Read(bytes)    // <--------------- here!
+	_, err = buffer.Read(imageBuf)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	// then we need to determine the file type
 	// see https://www.socketloop.com/tutorials/golang-how-to-verify-uploaded-file-is-image-or-allowed-file-types
+	//filetype := http.DetectContentType(bytes)
+	//fmt.Println(filetype)
 
-	filetype := http.DetectContentType(bytes)
-
-	err = bucket.Put(path, bytes, filetype, s3.ACL("public-read"))
+	return imageBuf
 }
