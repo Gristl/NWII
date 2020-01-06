@@ -36,7 +36,7 @@ func main() {
 	shardLength := size / k
 	m := 12
 
-	code := origin.NewCode(m, k, size)
+	code := NewCode(m, k, size)
 
 	source := make([]byte, size)
 	for i := range source {
@@ -47,7 +47,7 @@ func main() {
 
 	errList := []byte{0, 2, 3, 4}
 
-	corrupted := corrupt(append(byteBuf, encoded...), errList, shardLength)
+	corrupted := origin.corrupt(append(byteBuf, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 	for toBeDeletedAtTheEnd > 0 {
