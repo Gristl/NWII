@@ -8,7 +8,7 @@
 // encoded shards can be lost while the original data can still be constructed
 // from the valid remaining eight shards.
 // Source: https://github.com/somethingnew2-0/go-erasure
-package main
+package imp
 
 // #cgo CFLAGS: -Wall -std=gnu99
 // #include "types.h"
