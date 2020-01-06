@@ -1,5 +1,5 @@
 package main
-
+// http://drmingdrmer.github.io/tech/distributed/2017/02/01/ec.html
 import (
 	"C"
 	"bufio"
@@ -47,8 +47,17 @@ func main() {
 	encoded := code.Encode(byteBuf)
 	fmt.Println("This is the length of the encoded byte array: %v", len(encoded))
 
-	errList := []byte{0, 2, 3, 4}
+	/* ToDo Nice To have: generate random errors in the variabel errList
+	var errList []byte
 
+	for i := 0; i < k; i++ {
+		errList = append(errList, byte(rand.Intn(len(encoded))))
+	}
+	*/
+	errList := []byte{0, 2, 3, 4} // ToDo Tell me why we can make at least 4 erros --> try with more, does not work
+
+	// The function corrupt deletes the bytes at the indexes that are handed over in the errList and all the following #sharedLength bytes
+	// That means that the i' th share is completely deleted
 	corrupted := origin.Corrupt(append(byteBuf, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
@@ -65,7 +74,7 @@ func main() {
 	if !bytes.Equal(byteBuf, recovered) {
 		fmt.Println("Source was not successfully recovered with 4 errors")
 	} else {
-		fmt.Println("This was sooooo incredibly successful, hillbilly! ")
+		fmt.Println("This was sooooo incredibly successful! ")
 	}
 }
 
