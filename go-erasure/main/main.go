@@ -8,14 +8,14 @@ import (
 	//origin "github.com/Gristl/NWII/go-erasure"
 	"io/ioutil"
 	origin "main/originalCode"
-	"math/rand"
 	"os"
 )
 
 func main() {
 	// 1. Convert a image into a byte array
 	var byteBuf = jpgToByte("Image.jpeg")
-	//fmt.Println(byteBuf)
+	fmt.Println("This is the picture as as byte array: " )
+	fmt.Println(byteBuf)
 
 	// 2. Convert that byte array back to a image
 	// --> Did it work??
@@ -39,25 +39,33 @@ func main() {
 
 	code := origin.NewCode(m, k, size)
 
-	source := make([]byte, size)
+	/*source := make([]byte, size)
 	for i := range source {
 		source[i] = byte(rand.Int63() & 0xff) //0x62
-	}
-
-	encoded := code.Encode(source)
+	}*/
+	fmt.Println("This is the length of the byte array: %v", len(byteBuf))
+	encoded := code.Encode(byteBuf)
+	fmt.Println("This is the length of the encoded byte array: %v", len(encoded))
 
 	errList := []byte{0, 2, 3, 4}
 
 	corrupted := origin.Corrupt(append(byteBuf, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
+
+	// Delete the last bytes in the array that we added so that size%k == 0
 	for toBeDeletedAtTheEnd > 0 {
-		//delete(recovered, byte)
+		corrupted = corrupted[:len(corrupted)-1]
+		//recovered = recovered[:len(recovered)-1]
+		toBeDeletedAtTheEnd--
 	}
 	byteToJpg(corrupted, "ImageCorrupt.jpg")
 	byteToJpg(recovered, "ImageRecovered.jpg")
+
 	if !bytes.Equal(byteBuf, recovered) {
 		fmt.Println("Source was not successfully recovered with 4 errors")
+	} else {
+		fmt.Println("This was sooooo incredibly successful, hillbilly! ")
 	}
 }
 
@@ -91,9 +99,9 @@ func jpgToByte (imageName string) (byteBuf []byte) {
 }
 
 
-func check(e error) {
-	if e != nil {
-		panic(e)
+func check(err error) {
+	if err != nil {
+		fmt.Println(err)
 	}
 }
 
