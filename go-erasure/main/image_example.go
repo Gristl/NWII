@@ -4,34 +4,38 @@ import "C"
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io/ioutil"
-	"math"
 	"math/rand"
 	"os"
-	"sync"
-	"testing"
 )
 
 func main() {
-
-	//fmt.Println("hello, you hillbilly!")
-
 	// 1. Convert a image into a byte array
-	var byteBuf = jpgToByte("WhatsAppImage2020-01-05at17.49.59.jpeg")
+	var byteBuf = jpgToByte("Image.jpeg")
 	//fmt.Println(byteBuf)
 
 	// 2. Convert that byte array back to a image
 	// --> Did it work??
-	byteToJpg(byteBuf, "TheVeryNewFuckingFile.jpg")
+	byteToJpg(byteBuf, "ImageDuplicate.jpg")
 
 	// 3. Erasure Code your byte array
-	var encodedByteBuf = erasureCodeBytes(byteBuf)
 
-}
+	// Make sure that (size%k == 0)
+	k := 8
+	var a byte = 0
+	var toBeDeletedAtTheEnd = 0
 
-func erasureCodeBytes (byteBuf []byte) (encodedByteBuf []byte) {
+	for len(byteBuf)%k != 0 {
+		byteBuf = append(byteBuf, a)
+		toBeDeletedAtTheEnd++
+	}
 
-	code := intoCode(byteBuf)
+	size := len(byteBuf) //k * shardLength
+	shardLength := size / k
+	m := 12
+
+	code := NewCode(m, k, size)
 
 	source := make([]byte, size)
 	for i := range source {
@@ -42,49 +46,16 @@ func erasureCodeBytes (byteBuf []byte) (encodedByteBuf []byte) {
 
 	errList := []byte{0, 2, 3, 4}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := corrupt(append(byteBuf, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
-
-	if !bytes.Equal(source, recovered) {
-		t.Error("Source was not sucessfully recovered with 4 errors")
+	for toBeDeletedAtTheEnd > 0 {
+		//delete(recovered, byte)
 	}
-}
-
-func intoCode(byteBuf []byte) *Code {
-	m := float64(len(byteBuf))
-	rate := 0.75 // how many percent of all shards do we need to reconstruct the original data
-	k := math.Round(rate * m)
-	shardLength := 1.25 * m
-	size := k * shardLength
-
-	if m <= 0 || k <= 0 || k >= m || k > 127 || m > 127 || size < 0 {
-		panic("Invalid erasure code params")
-	}
-	if size%k != 0 {
-		panic("Size to encode is not divisable by k and therefore cannot be encoded into shards")
-	}
-
-	encodeMatrix := make([]byte, m*k)
-	galoisTables := make([]byte, k*(m-k)*32)
-
-	if k > 5 {
-		C.gf_gen_cauchy1_matrix((*C.uchar)(&encodeMatrix[0]), C.int(m), C.int(k))
-	} else {
-		C.gf_gen_rs_matrix((*C.uchar)(&encodeMatrix[0]), C.int(m), C.int(k))
-	}
-
-	C.ec_init_tables(C.int(k), C.int(m-k), (*C.uchar)(&encodeMatrix[k*k]), (*C.uchar)(&galoisTables[0]))
-	return &Code{
-		M:            m,
-		K:            k,
-		ShardLength:  size / k,
-		EncodeMatrix: encodeMatrix,
-		galoisTables: galoisTables,
-		decode: &decodeNode{
-			children: make([]*decodeNode, m),
-			mutex:    &sync.Mutex{},
-		},
+	byteToJpg(corrupted, "ImageCorrupt.jpg")
+	byteToJpg(recovered, "ImageRecovered.jpg")
+	if !bytes.Equal(byteBuf, recovered) {
+		fmt.Println("Source was not successfully recovered with 4 errors")
 	}
 }
 
@@ -122,4 +93,15 @@ func check(e error) {
 	if e != nil {
 		panic(e)
 	}
+}
+
+func corrupt(source, errList []byte, shardLength int) []byte {
+	corrupted := make([]byte, len(source))
+	copy(corrupted, source)
+	for _, err := range errList {
+		for i := 0; i < shardLength; i++ {
+			corrupted[int(err)*shardLength+i] = 0x00
+		}
+	}
+	return corrupted
 }
