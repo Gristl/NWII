@@ -1,4 +1,4 @@
-package main
+package originalCode
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"testing"
 	//"github.com/Gristl/NWII/go-erasure/main/imp"
 )
-
+/*
 func corrupt(source, errList []byte, shardLength int) []byte {
 	corrupted := make([]byte, len(source))
 	copy(corrupted, source)
@@ -18,7 +18,7 @@ func corrupt(source, errList []byte, shardLength int) []byte {
 		}
 	}
 	return corrupted
-}
+}*/
 
 func randomErrorList(m, numberOfErrs int) []byte {
 	set := make(map[int]bool, m)
@@ -59,7 +59,7 @@ func TestBasicErasure_12_8(t *testing.T) {
 
 	errList := []byte{0, 2, 3, 4}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 
@@ -85,7 +85,7 @@ func TestBasicErasure_16_8(t *testing.T) {
 
 	errList := []byte{0, 1, 2, 3, 4, 5, 6, 7}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 
@@ -111,7 +111,7 @@ func TestBasicErasure_20_8(t *testing.T) {
 
 	errList := []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 17}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 
@@ -137,7 +137,7 @@ func TestBasicErasure_9_5(t *testing.T) {
 
 	errList := []byte{0, 2, 3, 4}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 
@@ -163,7 +163,7 @@ func TestRandomErasure_12_8(t *testing.T) {
 
 	errList := randomErrorList(m, rand.Intn(m-k))
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 
@@ -189,7 +189,7 @@ func TestRandomErasure_16_8(t *testing.T) {
 
 	errList := randomErrorList(m, rand.Intn(m-k))
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 
@@ -215,7 +215,7 @@ func TestRandomErasure_20_8(t *testing.T) {
 
 	errList := randomErrorList(m, rand.Intn(m-k))
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 
@@ -241,7 +241,7 @@ func TestRandomErasure_9_5(t *testing.T) {
 
 	errList := randomErrorList(m, rand.Intn(m-k))
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 
@@ -267,7 +267,7 @@ func TestBasicCacheErasure_12_8(t *testing.T) {
 
 	errList := []byte{0, 2, 3, 4}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, true)
 
@@ -293,7 +293,7 @@ func TestBasicCacheErasure_16_8(t *testing.T) {
 
 	errList := []byte{0, 1, 2, 3, 4, 5, 6, 7}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, true)
 
@@ -319,7 +319,7 @@ func TestBasicCacheErasure_20_8(t *testing.T) {
 
 	errList := []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 17}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, true)
 
@@ -345,7 +345,7 @@ func TestBasicCacheErasure_9_5(t *testing.T) {
 
 	errList := []byte{0, 2, 3, 4}
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, true)
 
@@ -371,7 +371,7 @@ func TestRandomCacheErasure_12_8(t *testing.T) {
 
 	errList := randomErrorList(m, rand.Intn(m-k))
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, true)
 
@@ -397,7 +397,7 @@ func TestRandomCacheErasure_16_8(t *testing.T) {
 
 	errList := randomErrorList(m, rand.Intn(m-k))
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, true)
 
@@ -423,7 +423,7 @@ func TestRandomCacheErasure_20_8(t *testing.T) {
 
 	errList := randomErrorList(m, rand.Intn(m-k))
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, true)
 
@@ -449,7 +449,7 @@ func TestRandomCacheErasure_9_5(t *testing.T) {
 
 	errList := randomErrorList(m, rand.Intn(m-k))
 
-	corrupted := corrupt(append(source, encoded...), errList, shardLength)
+	corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, true)
 
@@ -504,7 +504,7 @@ func BenchmarkBasicDecode_12_8(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		errList := []byte{0, 2, 3, 4}
 
-		corrupted := corrupt(append(source, encoded...), errList, shardLength)
+		corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 		for pb.Next() {
 			recovered := code.Decode(corrupted, errList, false)
@@ -562,7 +562,7 @@ func BenchmarkBasicCacheDecode_12_8(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		errList := []byte{0, 2, 3, 4}
 
-		corrupted := corrupt(append(source, encoded...), errList, shardLength)
+		corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 		for pb.Next() {
 			recovered := code.Decode(corrupted, errList, true)
@@ -597,7 +597,7 @@ func BenchmarkRandomDecode_12_8(b *testing.B) {
 		for pb.Next() {
 			errList := randomErrorList(m, rand.Intn(m-k)+1)
 
-			corrupted := corrupt(append(source, encoded...), errList, shardLength)
+			corrupted := Corrupt(append(source, encoded...), errList, shardLength)
 
 			recovered := code.Decode(corrupted, errList, rand.Float32() > 0.5)
 

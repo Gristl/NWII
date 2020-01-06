@@ -1,12 +1,13 @@
 package main
 
-import "C"
 import (
+	"C"
 	"bufio"
 	"bytes"
 	"fmt"
-	origin "github.com/Gristl/NWII/go-erasure/main"
+	//origin "github.com/Gristl/NWII/go-erasure"
 	"io/ioutil"
+	origin "main/originalCode"
 	"math/rand"
 	"os"
 )
@@ -36,7 +37,7 @@ func main() {
 	shardLength := size / k
 	m := 12
 
-	code := NewCode(m, k, size)
+	code := origin.NewCode(m, k, size)
 
 	source := make([]byte, size)
 	for i := range source {
@@ -47,7 +48,7 @@ func main() {
 
 	errList := []byte{0, 2, 3, 4}
 
-	corrupted := origin.corrupt(append(byteBuf, encoded...), errList, shardLength)
+	corrupted := origin.Corrupt(append(byteBuf, encoded...), errList, shardLength)
 
 	recovered := code.Decode(corrupted, errList, false)
 	for toBeDeletedAtTheEnd > 0 {

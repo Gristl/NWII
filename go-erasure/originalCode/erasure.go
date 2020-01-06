@@ -8,7 +8,7 @@
 // encoded shards can be lost while the original data can still be constructed
 // from the valid remaining eight shards.
 // Source: https://github.com/somethingnew2-0/go-erasure
-package main
+package originalCode
 
 // #cgo CFLAGS: -Wall -std=gnu99
 // #include "types.h"
@@ -176,4 +176,15 @@ func (c *Code) Decode(encoded []byte, errList []byte, cache bool) (recovered []b
 	}
 
 	return recovered
+}
+
+func Corrupt(source, errList []byte, shardLength int) []byte {
+	corrupted := make([]byte, len(source))
+	copy(corrupted, source)
+	for _, err := range errList {
+		for i := 0; i < shardLength; i++ {
+			corrupted[int(err)*shardLength+i] = 0x00
+		}
+	}
+	return corrupted
 }
