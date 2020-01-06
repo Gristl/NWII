@@ -178,6 +178,37 @@ func (c *Code) Decode(encoded []byte, errList []byte, cache bool) (recovered []b
 	return recovered
 }
 
+func (c *Code) DecodeWOMagic(encoded []byte, errList []byte, cache bool) (recovered []byte) {
+	if len(encoded) != c.M*c.ShardLength {
+		panic("Data to decode is not the proper size")
+	}
+	if len(errList) > c.M-c.K {
+		panic("Too many errors, cannot decode")
+	}
+	if len(errList) == 0 {
+		recovered = append(recovered, encoded[:c.K*c.ShardLength]...)
+	} else {
+		node := c.getDecode(errList, cache)
+
+		for i := 0; i < c.K; i++ {
+			recovered = append(recovered, encoded[(int(node.decodeIndex[i])*c.ShardLength):int(node.decodeIndex[i]+1)*c.ShardLength]...)
+		}
+
+		decoded := make([]byte, c.M*c.ShardLength)
+		C.ec_encode_data(C.int(c.ShardLength), C.int(c.K), C.int(c.M), (*C.uchar)(&node.galoisTables[0]), (*C.uchar)(&recovered[0]), (*C.uchar)(&decoded[0]))
+
+		copy(recovered, encoded)
+
+		for _, err := range errList { //for i, err := range errList {
+			if int(err) < c.K {
+				//copy(recovered[int(err)*c.ShardLength:int(err+1)*c.ShardLength], decoded[i*c.ShardLength:(i+1)*c.ShardLength])
+			}
+		}
+	}
+
+	return recovered
+}
+
 func Corrupt(source, errList []byte, shardLength int) []byte {
 	corrupted := make([]byte, len(source))
 	copy(corrupted, source)

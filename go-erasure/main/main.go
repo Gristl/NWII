@@ -43,9 +43,9 @@ func main() {
 	for i := range source {
 		source[i] = byte(rand.Int63() & 0xff) //0x62
 	}*/
-	fmt.Println("This is the length of the byte array: %v", len(byteBuf))
+
 	encoded := code.Encode(byteBuf)
-	fmt.Println("This is the length of the encoded byte array: %v", len(encoded))
+
 
 	/* ToDo Nice To have: generate random errors in the variabel errList
 	var errList []byte
@@ -60,16 +60,25 @@ func main() {
 	// That means that the i' th share is completely deleted
 	corrupted := origin.Corrupt(append(byteBuf, encoded...), errList, shardLength)
 
+	stillCorrupt := code.DecodeWOMagic(corrupted, errList, false)
 	recovered := code.Decode(corrupted, errList, false)
 
 	// Delete the last bytes in the array that we added so that size%k == 0
 	for toBeDeletedAtTheEnd > 0 {
-		corrupted = corrupted[:len(corrupted)-1]
-		//recovered = recovered[:len(recovered)-1]
+		byteBuf = byteBuf[:len(byteBuf)-1]
+		stillCorrupt = corrupted[:len(corrupted)-1]
+		recovered = recovered[:len(recovered)-1]
 		toBeDeletedAtTheEnd--
 	}
-	byteToJpg(corrupted, "ImageCorrupt.jpg")
+	byteToJpg(stillCorrupt, "ImageCorrupt.jpg")
 	byteToJpg(recovered, "ImageRecovered.jpg")
+
+	fmt.Println("This is the length of the byte array: %v", len(byteBuf))
+	fmt.Println("This is the length of the encoded byte array: %v", len(encoded))
+	fmt.Println("This is the length of the currupt encoded byte array: %v", len(corrupted))
+	fmt.Println("This is the length of the currupt decoded array: %v", len(stillCorrupt))
+	fmt.Println("This is the length of the recovered decoded byte array: %v", len(recovered))
+
 
 	if !bytes.Equal(byteBuf, recovered) {
 		fmt.Println("Source was not successfully recovered with 4 errors")
