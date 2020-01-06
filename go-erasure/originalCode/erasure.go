@@ -198,12 +198,12 @@ func (c *Code) DecodeWOMagic(encoded []byte, errList []byte, cache bool) (recove
 		C.ec_encode_data(C.int(c.ShardLength), C.int(c.K), C.int(c.M), (*C.uchar)(&node.galoisTables[0]), (*C.uchar)(&recovered[0]), (*C.uchar)(&decoded[0]))
 
 		copy(recovered, encoded)
-
-		for _, err := range errList { //for i, err := range errList {
-			if int(err) < c.K {
-				//copy(recovered[int(err)*c.ShardLength:int(err+1)*c.ShardLength], decoded[i*c.ShardLength:(i+1)*c.ShardLength])
+		/*
+		for_, err := range errList { //for i, err := range errList {
+			if int(err) < c.K{
+			//copy(recovered[int(err)*c.ShardLength:int(err+1)*c.ShardLength], decoded[i*c.ShardLength:(i+1)*c.ShardLength])
 			}
-		}
+		}*/
 	}
 
 	return recovered

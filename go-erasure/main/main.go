@@ -66,7 +66,7 @@ func main() {
 	// Delete the last bytes in the array that we added so that size%k == 0
 	for toBeDeletedAtTheEnd > 0 {
 		byteBuf = byteBuf[:len(byteBuf)-1]
-		stillCorrupt = corrupted[:len(corrupted)-1]
+		stillCorrupt = stillCorrupt[:len(stillCorrupt)-1]
 		recovered = recovered[:len(recovered)-1]
 		toBeDeletedAtTheEnd--
 	}
@@ -75,7 +75,7 @@ func main() {
 
 	fmt.Println("This is the length of the byte array: %v", len(byteBuf))
 	fmt.Println("This is the length of the encoded byte array: %v", len(encoded))
-	fmt.Println("This is the length of the currupt encoded byte array: %v", len(corrupted))
+	//fmt.Println("This is the length of the currupt encoded byte array: %v", len(corrupted)) // Todo tell me why the length of the corrupt is len(normal) + len(encoded)
 	fmt.Println("This is the length of the currupt decoded array: %v", len(stillCorrupt))
 	fmt.Println("This is the length of the recovered decoded byte array: %v", len(recovered))
 
