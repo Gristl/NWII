@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"sort"
 	"testing"
+	//"github.com/Gristl/NWII/go-erasure/main/imp"
 )
 
 func corrupt(source, errList []byte, shardLength int) []byte {

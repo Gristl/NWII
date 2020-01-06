@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	origin "github.com/Gristl/NWII/go-erasure/main"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -35,7 +36,7 @@ func main() {
 	shardLength := size / k
 	m := 12
 
-	code := NewCode(m, k, size)
+	code := origin.NewCode(m, k, size)
 
 	source := make([]byte, size)
 	for i := range source {
@@ -95,6 +96,7 @@ func check(e error) {
 	}
 }
 
+/*
 func corrupt(source, errList []byte, shardLength int) []byte {
 	corrupted := make([]byte, len(source))
 	copy(corrupted, source)
@@ -104,4 +106,4 @@ func corrupt(source, errList []byte, shardLength int) []byte {
 		}
 	}
 	return corrupted
-}
+}*/
